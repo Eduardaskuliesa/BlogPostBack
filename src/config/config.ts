@@ -8,7 +8,8 @@ const {
   AWS_REGION,
   AWS_ACCESS_KEY_ID,
   AWS_SECRET_ACCESS_KEY,
-  DYNAMODB_TABLE,
+  AUTHOR_DYNAMODB_TABLE,
+  BLOG_DYNAMODB_TABLE,
   S3_BUCKET_NAME,
   JWT_SECRET,
   JWT_TIME
@@ -20,6 +21,8 @@ if (
   || AWS_REGION === undefined
   || AWS_ACCESS_KEY_ID === undefined
   || AWS_SECRET_ACCESS_KEY === undefined
+  || AUTHOR_DYNAMODB_TABLE === undefined
+  || BLOG_DYNAMODB_TABLE === undefined
 ) {
   throw new Error("Please define constants in '.env' file");
 }
@@ -33,7 +36,8 @@ const config = {
     region: AWS_REGION,
     accesKeyId: AWS_ACCESS_KEY_ID,
     secretAccessKey: AWS_SECRET_ACCESS_KEY,
-    dynamoTable: DYNAMODB_TABLE,
+    authorDynamo: AUTHOR_DYNAMODB_TABLE,
+    blogDynamo: BLOG_DYNAMODB_TABLE,
     s3Bucket: S3_BUCKET_NAME,
   },
   jwt:{

@@ -6,7 +6,8 @@ import helmet from "helmet";
 import morgan from "morgan";
 import config from "./config/config";
 import { Request, Response } from "express";
-import authorRoutes from './routes/authorRoutes'
+import authorRoutes from "./routes/authorRoutes";
+import blogPostRoutes from "./routes/blogPostRoutes";
 //CONFIGURATIONS
 const server = express();
 server.use(express.json());
@@ -16,8 +17,8 @@ server.use(cors());
 server.use(express.static("public"));
 
 //ROUTES
-server.use('/api/', authorRoutes);
-
+server.use("/api/", authorRoutes);
+server.use("/api/", blogPostRoutes);
 
 //SERVER
 server.listen(config.server.port, () => {

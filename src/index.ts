@@ -1,28 +1,63 @@
-import express from "express";
-import dotenv from "dotenv";
-import bodyParser from "body-parser";
-import cors from "cors";
-import helmet from "helmet";
-import morgan from "morgan";
-import config from "./config/config";
-import { Request, Response } from "express";
-import authorRoutes from "./routes/authorRoutes";
-import blogPostRoutes from "./routes/blogPostRoutes";
-//CONFIGURATIONS
-const server = express();
-server.use(express.json());
-server.use(morgan("tiny"));
-server.use(helmet());
-server.use(cors());
-server.use(express.static("public"));
+import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
+import {
+  createAuthor,
+  getAllAuthors,
+  updateAuthor,
+  deleteAuthor,
+} from "./handlers/authorHandler";
+import {
+  createPost,
+  getAllPosts,
+  getPost,
+  updatePost,
+  deletePost,
+} from "./handlers/blogHandler";
 
-//ROUTES
-server.use("/api/", authorRoutes);
-server.use("/api/", blogPostRoutes);
+export const handler = async (
+  event: APIGatewayProxyEvent
+): Promise<APIGatewayProxyResult> => {
+  try {
+    // Route patterns: METHOD /path
+    switch (`${event.httpMethod} ${event.resource}`) {
+      // Author routes
+      case "POST /authors":
+        return await createAuthor(event);
+      case "GET /authors":
+        return await getAllAuthors();
+      case "PUT /authors/{id}":
+        return await updateAuthor(event);
+      case "DELETE /authors/{id}":
+        return await deleteAuthor(event);
 
-//SERVER
-server.listen(config.server.port, () => {
-  console.log(
-    `server is running on: http://${config.server.domain}:${config.server.port}`
-  );
-});
+      // Blog post routes
+      case "POST /posts":
+        return await createPost(event);
+      case "GET /posts":
+        return await getAllPosts();
+      case "GET /posts/{id}":
+        return await getPost(event);
+      case "PUT /posts/{id}":
+        return await updatePost(event);
+      case "DELETE /posts/{id}":
+        return await deletePost(event);
+
+      default:
+        return {
+          statusCode: 404,
+          body: JSON.stringify({
+            success: false,
+            message: "Route not found",
+          }),
+        };
+    }
+  } catch (error) {
+    console.error("Unexpected error:", error);
+    return {
+      statusCode: 500,
+      body: JSON.stringify({
+        success: false,
+        message: "Internal server error",
+      }),
+    };
+  }
+};
